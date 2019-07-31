@@ -11,8 +11,7 @@ from utils import read_hash_record, update_hash_record
 def TREC_maker(no, title, desc, content):
 	trec_text = '<DOC>\n'
 	trec_text += '<DOCNO>'+no+'</DOCNO>\n'
-	trec_text += '<HEAD>'+title+'</HEAD>\n'
-	trec_text += '<TEXT>\n'+desc+'\n'+content+'\n</TEXT>\n'
+	trec_text += '<TEXT>\n'+title+'\n\n'+desc+'\n\n'+content+'\n</TEXT>\n'
 	trec_text += '</DOC>'
 	return trec_text
 
@@ -28,7 +27,7 @@ def write_file(filename, text):
 		f.write(text)
 
 bucket_name = 'hackathon-podcast-search-transcript'
-hash_record_path = 'compose_record.txt'
+hash_record_path = '/tmp/compose_record.txt'
 
 s3 = boto3.resource('s3')
 s3_client = boto3.client('s3')
