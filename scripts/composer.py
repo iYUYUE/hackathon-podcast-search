@@ -28,6 +28,8 @@ def write_file(filename, text):
 
 bucket_name = 'hackathon-podcast-search-transcript'
 hash_record_path = '/tmp/compose_record.txt'
+cache_path = '/tmp/hackathon-podcast-search-source'
+index_path = '/tmp/hackathon-podcast-search.idx'
 
 s3 = boto3.resource('s3')
 s3_client = boto3.client('s3')
@@ -57,8 +59,12 @@ for obj in res['Contents']:
 		r = requests.get(url=api_url)
 		metadata = r.json()
 		trec_text = TREC_maker(pid, metadata["title"], metadata["shortDescription"], full_text)
-		write_file('/tmp/hackathon-podcast-search-source/'+filename+'.trectext', trec_text)
+		write_file(cache_path+filename+'/.trectext', trec_text)
 		worked_list.append(filename)
 
 print("Composed jobs:", worked_list)
 update_hash_record(worked_list, hash_record_path)
+
+# update cache
+os.system("~/galago-3.16-bin/bin/galago build --indexPath="+index_path+" --inputPath+"+cache_path)
+
