@@ -63,8 +63,9 @@ for obj in res['Contents']:
 		worked_list.append(filename)
 
 print("Composed jobs:", worked_list)
-update_hash_record(worked_list, hash_record_path)
 
-# update cache
-os.system("~/galago-3.16-bin/bin/galago build --indexPath="+index_path+" --inputPath+"+cache_path)
-
+if worked_list:
+	# update record
+	update_hash_record(worked_list, hash_record_path)
+	# update cache
+	os.system("~/galago-3.16-bin/bin/galago build --indexPath="+index_path+" --inputPath+"+cache_path)

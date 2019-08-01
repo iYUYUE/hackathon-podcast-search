@@ -6,7 +6,7 @@ import datetime
 import dateutil.parser
 from utils import read_hash_record, update_hash_record
 
-hash_record_path = 'collect_record.txt'
+hash_record_path = '/tmp/collect_record.txt'
 audio_bucket = 'hackathon-podcast-search'
 transcript_bucket = 'hackathon-podcast-search-transcript'
 
