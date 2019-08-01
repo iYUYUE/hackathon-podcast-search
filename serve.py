@@ -1,4 +1,10 @@
-from flask import Flask, request, send_from_directory, render_template
+from flask import Flask, Response, request, send_from_directory, render_template
+import json
+
+def pack_json(ret):
+	return Response(response=json.dumps(ret), 
+		status=200, 
+		mimetype="application/json")
 
 def get_count(path):
 	import os
@@ -35,11 +41,12 @@ def handle_search():
 	result_list = result.decode("utf-8").split('\n')
 	ret = []
 	dedup = []
+	idx = 0
 	for item in result_list:
 		val = item.split(' ')
 		if len(val) > 3 and val[2] not in dedup:
 			val_dict =	{
-				"index": val[3],
+				"idx": idx,
 				"pid": val[2],
 				"score": val[4],
 				"start": val[6],
@@ -47,8 +54,8 @@ def handle_search():
 			}
 			ret.append(val_dict)
 			dedup.append(val[2])
-	import json
-	return json.dumps(ret)
+			idx += 1
+	return pack_json(ret)
 
 @app.route('/api/stats', methods=['GET'])
 def handle_stats():
@@ -57,11 +64,10 @@ def handle_stats():
 	import subprocess
 	result = subprocess.check_output(['/home/ubuntu/galago-3.16-bin/bin/galago', 'stats', '--index=/tmp/hackathon-podcast-search.idx'])
 	collect_count = 0
-	import json
 	ret = json.loads(result)
 	ret['collect_count'] = get_count(collect_record_path)
 	ret['compose_count'] = get_count(compose_record_path)
-	return ret
+	return pack_json(ret)
 
 if __name__ == "__main__":
 	app.run(host= '0.0.0.0', port=int('80'))
