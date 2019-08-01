@@ -60,8 +60,8 @@
         </div>
       </li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+    <form action="/api/search" method="post" id="search-form" class="form-inline my-2 my-lg-0">
+      <input name="query" class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
       <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
     </form>
   </div>
@@ -69,72 +69,40 @@
 
 <div class="container">
 	<div class="card-deck">
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
-		<div class="card my-3">
-			<img src="http://placehold.it/560x560" class="card-img-top">
-			<div class="card-body">
-				<h4 class="card-title">Title</h4>
-				<p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-				<button class="btn btn-primary" type="button">Button</button>
-			</div>
-		</div>
 	</div>
 </div>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script>window.jQuery || document.write('<script src="https://getbootstrap.com/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script><script src="https://getbootstrap.com/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script></body>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="https://getbootstrap.com/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="https://getbootstrap.com/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+    <script>
+	$( "#search-form" ).submit(function( event ) {
+		event.preventDefault();
+		var post_url = $(this).attr("action"); //get form action url
+		var request_method = $(this).attr("method"); //get form GET/POST method
+		var form_data = $(this).serialize(); //Encode form elements for submission
+		var html = ''
+		$.ajax({
+			url : post_url,
+			type: request_method,
+			data : form_data,
+			dataType: 'json'
+		}).done(function(response){ //
+			
+			response.forEach((item) => {
+				$.ajax({
+					url : 'https://audio-api.washpost.arcpublishing.com/api/v1/audio/'+item.pid,
+					type: 'GET',
+					dataType: 'json'
+				}).done(function(response){
+					html += '<div class="card my-3"><img src="http://placehold.it/560x560" class="card-img-top"><div class="card-body"><h4 class="card-title">'+response.title+'</h4><p class="card-text">Nullam id dolor id nibh ultricies vehicula ut id elit.</p><button class="btn btn-primary" type="button">Button</button></div></div>';
+				});
+				
+			});
+
+			$(".card-deck").html(html);
+			
+		});
+	});
+	</script>
+  </body>
 </html>
