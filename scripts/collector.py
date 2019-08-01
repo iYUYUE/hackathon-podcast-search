@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-import os
+import os, sys
 import boto3
 import datetime
 import dateutil.parser
 from utils import read_hash_record, update_hash_record
+import logging
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
 
 hash_record_path = '/tmp/collect_record.txt'
 audio_bucket = 'hackathon-podcast-search'
@@ -52,9 +55,9 @@ for file in new_files:
 				LanguageCode ='en-US',
 				OutputBucketName = transcript_bucket,
 			)
-		except ClientError as e:
+		except transcribe.exceptions.ConflictException as e:
 			if e.response['Error']['Code'] == 'ConflictException':
-				logging.info('Job ['+job_name+'] is already running.')
+				logging.info('Job ['+file_hash+'] is already running.')
 			else:
 				logging.info("Unexpected error: %s" % e)
 		worked_list.append(file_hash)
