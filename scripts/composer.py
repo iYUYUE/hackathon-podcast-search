@@ -59,7 +59,7 @@ for obj in res['Contents']:
 		r = requests.get(url=api_url)
 		metadata = r.json()
 		trec_text = TREC_maker(pid, metadata["title"], metadata["shortDescription"], full_text)
-		write_file(cache_path+filename+'/.trectext', trec_text)
+		write_file(cache_path+'/'+filename+'.trectext', trec_text)
 		worked_list.append(filename)
 
 print("Composed jobs:", worked_list)
