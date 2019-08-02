@@ -37,7 +37,7 @@ def handle_search():
 	tokenizer = RegexpTokenizer(r'\w+')
 	query_str = ' '.join(tokenizer.tokenize(query_str))
 	import subprocess
-	result = subprocess.check_output(['/home/ubuntu/galago-3.16-bin/bin/galago', 'batch-search', '--index=/tmp/hackathon-podcast-search.idx', '--passageQuery=true', '--passageSize=50', '--passageShift=25', '--queryType=simple', '--requested=10', "--query='"+query_str+"'"])
+	result = subprocess.check_output(['/home/ubuntu/galago-3.16-bin/bin/galago', 'batch-search', '--index=/tmp/hackathon-podcast-search.idx', '--passageQuery=true', '--passageSize=50', '--passageShift=25', '--queryType=simple', "--query='"+query_str+"'"])
 	result_list = result.decode("utf-8").split('\n')
 	ret = []
 	dedup = []

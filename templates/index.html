@@ -119,6 +119,73 @@
     <script src="https://getbootstrap.com/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <script>
+    function loadScript(url) {
+		var callback =
+		  arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function() {};
+		var errorback =
+		  arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function() {};
+
+		var script = document.createElement("script");
+		var node = document.getElementsByTagName("script")[0];
+
+		node.parentNode.insertBefore(script, node);
+
+		script.onerror = errorback;
+		script.onload = callback;
+		script.id = "poda-player";
+
+		script.type = "text/javascript";
+		script.async = true;
+
+		script.src = url;
+	}
+    </script>
+    <script>
+    function fill_result(response) {
+    	console.log(response.id)
+		if (response.images.coverImage.url != null && response.seriesMeta.seriesSlug != null && response.seriesMeta.seriesSlug != 'admin-and-testing') {
+			url = 'https://www.washingtonpost.com/podcasts/'+response.seriesMeta.seriesSlug+'/'+response.slug
+			buttons = '<button class="btn btn-light float-right align-bottom more-like-this" role="button" target="_blank">More Like This</button>'
+			html = '<div class="card my-3">'
+			cover ='<img src="'+response.images.coverImage.url+'" class="card-img-top">'
+			card = '<div class="card-body"><h4 class="card-title">'+response.title+'</h4><p class="card-text">'+response.shortDescription+'</p>'
+			player = '<div class="poda-player-container" data-org="washpost"  data-slug="'+ response.slug + '" data-skin="flex"> </div>'
+			
+			html += cover + buttons + card + player + '</div></div>';
+			$(".card-deck").append(html);
+		}
+    }
+    
+	$('div.card-deck').on("click", 'button.more-like-this', function() {
+		var data_form = new FormData(document.querySelector("form"));
+		title = $(this).parent().find(".card-title").first().text()
+		text = $(this).parent().find(".card-text").first().text()
+		data_form.append("query", title+' '+text);
+		$(".card-deck").html('')
+		NProgress.start();
+		$.ajax({
+			url : '/api/search',
+			type: 'POST',
+			data : data_form,
+			processData: false,
+  			contentType: false,
+			dataType: 'json'
+		}).done(function(response){ //
+			
+			response.forEach((item) => {
+				$.ajax({
+					url : 'https://audio-api.washpost.arcpublishing.com/api/v1/audio/'+item.pid,
+					type: 'GET',
+					dataType: 'json'
+				}).done(function(response){
+					fill_result(response)
+				});
+				
+			});
+			NProgress.done();
+			loadScript('https://d2lhouwh993x2g.cloudfront.net/sandbox/loader.js', ()=>{window.podas = {};window.podaReboot()});
+		});
+	});
 	$( "#search-form" ).submit(function( event ) {
 		event.preventDefault();
 		$(".card-deck").html('')
@@ -139,18 +206,12 @@
 					type: 'GET',
 					dataType: 'json'
 				}).done(function(response){
-					console.log(response.id)
-					if (response.images.coverImage.url != null && response.seriesMeta.seriesSlug != null && response.seriesMeta.seriesSlug != 'admin-and-testing') {
-						url = 'https://www.washingtonpost.com/podcasts/'+response.seriesMeta.seriesSlug+'/'+response.slug
-						html = '<div class="card my-3"><img src="'+response.images.coverImage.url+'" class="card-img-top"><div class="card-body"><h4 class="card-title">'+response.title+'</h4><p class="card-text">'+response.shortDescription+'</p><a href="'+url+'" class="btn btn-primary" role="button" target="_blank">Listen</a></div></div>';
-						$(".card-deck").append(html);
-					}
-					
+					fill_result(response)
 				});
 				
 			});
 			NProgress.done();
-			
+			loadScript('https://d2lhouwh993x2g.cloudfront.net/sandbox/loader.js', ()=>{window.podas = {};window.podaReboot()});
 		});
 	});
 	$('#StatusModal').on('show.bs.modal', function (event) {
