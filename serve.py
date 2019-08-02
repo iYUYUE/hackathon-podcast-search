@@ -70,4 +70,4 @@ def handle_stats():
 	return pack_json(ret)
 
 if __name__ == "__main__":
-	app.run(host= '0.0.0.0', port=int('80'))
+	app.run(host= '0.0.0.0', port=int('3000'))
