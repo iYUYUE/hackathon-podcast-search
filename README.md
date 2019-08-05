@@ -11,5 +11,5 @@
 ![Image of Frontend 1](https://github.com/WPMedia/hackathon-podcast-search/raw/master/demo/front1.png)
 ![Image of Frontend 2](https://github.com/WPMedia/hackathon-podcast-search/raw/master/demo/front2.png)
 
-## Thanks
+## Credits
 Special thank to Leo Dominguez, Hardip Singh, Dave Merrell and Patrick Cullen for their countless support and contribution to this project.
