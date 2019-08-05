@@ -13,7 +13,6 @@
 	<link href="https://getbootstrap.com/docs/4.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css"/>
 
-
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -118,6 +117,8 @@
     <script>window.jQuery || document.write('<script src="https://getbootstrap.com/docs/4.3/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="https://getbootstrap.com/docs/4.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-lazy@1.7.10/jquery.lazy.plugins.min.js"></script>
     <script>
     function loadScript(url) {
 		var callback =
@@ -147,13 +148,24 @@
 			url = 'https://www.washingtonpost.com/podcasts/'+response.seriesMeta.seriesSlug+'/'+response.slug
 			buttons = '<button class="btn btn-light float-right align-bottom more-like-this" role="button" target="_blank">More Like This</button>'
 			html = '<div class="card my-3">'
-			cover ='<img src="'+response.images.coverImage.url+'" class="card-img-top">'
+			cover ='<img data-src="'+response.images.coverImage.url+'" class="lazy card-img-top">'
 			card = '<div class="card-body"><h4 class="card-title">'+response.title+'</h4><p class="card-text">'+response.shortDescription+'</p>'
 			player = '<div class="poda-player-container" data-org="washpost"  data-slug="'+ response.slug + '" data-skin="flex"> </div>'
 			
 			html += cover + buttons + card + player + '</div></div>';
+
 			$(".card-deck").append(html);
 		}
+    }
+
+    function lazy_load() {
+    	$("img.lazy").Lazy({
+			effect: 'fadeIn',
+	    	bind: 'event',
+	    	onError: function(element) {
+	            console.log('error loading ' + element.data('src'));
+	        }
+	    });
     }
     
 	$('div.card-deck').on("click", 'button.more-like-this', function() {
@@ -171,19 +183,25 @@
   			contentType: false,
 			dataType: 'json'
 		}).done(function(response){ //
-			
-			response.forEach((item) => {
-				$.ajax({
-					url : 'https://audio-api.washpost.arcpublishing.com/api/v1/audio/'+item.pid,
-					type: 'GET',
-					dataType: 'json'
-				}).done(function(response){
-					fill_result(response)
+			if (response.length > 0) {
+				response.forEach((item) => {
+					$.ajax({
+						url : 'https://audio-api.washpost.arcpublishing.com/api/v1/audio/'+item.pid,
+						type: 'GET',
+						dataType: 'json'
+					}).done(function(response){
+						fill_result(response)
+						lazy_load()
+					});
+					
 				});
-				
-			});
+				loadScript('https://d2lhouwh993x2g.cloudfront.net/sandbox/loader.js', ()=>{window.podas = {};window.podaReboot()});
+
+			} else {
+				$(".card-deck").html("Hmm, I don't know!")
+			}
 			NProgress.done();
-			loadScript('https://d2lhouwh993x2g.cloudfront.net/sandbox/loader.js', ()=>{window.podas = {};window.podaReboot()});
+			
 		});
 	});
 	$( "#search-form" ).submit(function( event ) {
@@ -199,19 +217,25 @@
 			data : form_data,
 			dataType: 'json'
 		}).done(function(response){ //
-			
-			response.forEach((item) => {
-				$.ajax({
-					url : 'https://audio-api.washpost.arcpublishing.com/api/v1/audio/'+item.pid,
-					type: 'GET',
-					dataType: 'json'
-				}).done(function(response){
-					fill_result(response)
+			if (response.length > 0) {
+				response.forEach((item) => {
+					$.ajax({
+						url : 'https://audio-api.washpost.arcpublishing.com/api/v1/audio/'+item.pid,
+						type: 'GET',
+						dataType: 'json'
+					}).done(function(response){
+						fill_result(response)
+						lazy_load()
+					});
+					
 				});
-				
-			});
+				loadScript('https://d2lhouwh993x2g.cloudfront.net/sandbox/loader.js', ()=>{window.podas = {};window.podaReboot()});
+
+			} else {
+				$(".card-deck").html("Hmm, I don't know!")
+			}
 			NProgress.done();
-			loadScript('https://d2lhouwh993x2g.cloudfront.net/sandbox/loader.js', ()=>{window.podas = {};window.podaReboot()});
+			
 		});
 	});
 	$('#StatusModal').on('show.bs.modal', function (event) {
@@ -233,6 +257,15 @@
 		$("#composed-podcasts").val("Loading...");
 		$("#indexed-podcasts").val("Loading...");
 	})
+
+	// shadow on hover
+	$('div.card-deck').on("mouseenter", "div.card", function() {
+		$(this).addClass('shadow-lg').css('cursor', 'pointer'); 
+	});
+
+	$('div.card-deck').on("mouseleave", "div.card", function() {
+	    $(this).removeClass('shadow-lg');
+	});
 	</script>
   </body>
 </html>
