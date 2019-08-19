@@ -1,4 +1,4 @@
-# Brings Search to Podcasts through Automatic Transcription
+# Bring Search to Podcasts through Automatic Transcription
 
 ## Why?
 * With all the amazing work podcasters are publishing each day, there’s no good reason why audio isn’t a first-class citizen in the same way.
