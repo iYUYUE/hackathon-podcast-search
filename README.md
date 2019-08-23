@@ -14,9 +14,12 @@
 * Card shadow on hover
 
 ## Backend
+Tech stack: Python, Java, Flask, Lemurand and AWS
 ![Image of Backend](https://github.com/WPMedia/hackathon-podcast-search/raw/master/demo/back.png)
 
 ## Frontend
+Tech stack: HTML5, JavaScript, CSS, jQuery and Bootstrap
+
 ![Image of Frontend 1](https://github.com/WPMedia/hackathon-podcast-search/raw/master/demo/front1.png)
 ![Image of Frontend 2](https://github.com/WPMedia/hackathon-podcast-search/raw/master/demo/front2.png)
 
